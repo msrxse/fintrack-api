@@ -1,0 +1,14 @@
+# Never commit these
+.env
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+
+# Poetry
+poetry.lock   # optional: commit this in apps, ignore in libraries
+
+# IDE
+.vscode/
+.idea/
