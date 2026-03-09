@@ -1,6 +1,9 @@
-from datetime import date, datetime
+from datetime import date as Date
+from datetime import datetime
 from decimal import Decimal
+
 from pydantic import BaseModel, ConfigDict
+
 from app.models.transaction import TransactionType
 from app.schemas.category import CategoryOut
 
@@ -12,14 +15,14 @@ class TransactionCreate(BaseModel):
     type: TransactionType
     description: str | None = None
     merchant: str | None = None
-    date: date
+    date: Date
 
 
 class TransactionUpdate(BaseModel):
     category_id: int | None = None
     description: str | None = None
     merchant: str | None = None
-    date: date | None = None
+    date: Date | None = None
 
 
 class TransactionOut(BaseModel):
@@ -31,6 +34,6 @@ class TransactionOut(BaseModel):
     type: TransactionType
     description: str | None = None
     merchant: str | None = None
-    date: date
+    date: Date
     created_at: datetime
     category: CategoryOut | None = None

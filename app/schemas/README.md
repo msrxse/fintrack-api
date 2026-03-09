@@ -40,7 +40,7 @@ Only output schemas need this. Input schemas receive plain dicts from the reques
 An output schema can embed another schema:
 
 ```python
-class TransactionOut(BaseModel):
+class AccountOut(BaseModel):
     id: int
     amount: Decimal
     category: CategoryOut  # nested

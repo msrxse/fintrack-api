@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import check_db_connection
+from app.routers import transactions, accounts, categories, budgets
 
 app = FastAPI(
     title="FinTrack API",
@@ -17,6 +18,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(transactions.router)
+app.include_router(accounts.router)
+app.include_router(categories.router)
+app.include_router(budgets.router)
+
 
 @app.get("/health", tags=["System"])
 def health_check():

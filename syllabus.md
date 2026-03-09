@@ -116,7 +116,7 @@ Outcome: DB filled with real-looking data you can actually query and explore.
 
 **Goal:** Understand the difference between your DB model and your API contract.
 
-- [ ] Done
+- [x] Done
 
 Topics:
 
