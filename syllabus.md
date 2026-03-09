@@ -72,7 +72,7 @@ Outcome: All tables defined in Python, relationships understood.
 
 **Goal:** Manage schema changes safely like production teams do.
 
-- [ ] Done
+- [x] Done
 
 Topics:
 
@@ -91,7 +91,7 @@ Outcome: Tables created in PostgreSQL via migration. You can roll back and forwa
 
 **Goal:** Populate the DB with realistic data to query against.
 
-- [ ] Done
+- [x] Done
 
 Data included:
 
