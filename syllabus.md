@@ -64,6 +64,57 @@ Topics:
 - Enums in the database
 - `created_at` / `updated_at` with server defaults
 
+```mermaid
+erDiagram
+    users {
+        int id PK
+        string email
+        string hashed_password
+        datetime created_at
+    }
+    accounts {
+        int id PK
+        int user_id FK
+        string name
+        string type
+        string currency
+        decimal balance
+        bool is_active
+    }
+    categories {
+        int id PK
+        string name
+        string type
+        bool is_system
+        int user_id FK
+    }
+    transactions {
+        int id PK
+        int account_id FK
+        int category_id FK
+        decimal amount
+        string type
+        string description
+        string merchant
+        date date
+        bool is_deleted
+    }
+    budgets {
+        int id PK
+        int user_id FK
+        int category_id FK
+        decimal limit_amount
+        string period
+    }
+
+    users ||--o{ accounts : "owns"
+    users ||--o{ budgets : "owns"
+    users ||--o{ categories : "creates"
+    accounts ||--o{ transactions : "has"
+    categories ||--o{ transactions : "tags"
+    categories ||--o{ budgets : "tracked by"
+```
+
 Outcome: All tables defined in Python, relationships understood.
 
 ---
@@ -135,7 +186,7 @@ Outcome: Clean, validated request/response shapes for all resources.
 
 **Goal:** Build all the API endpoints with proper REST conventions.
 
-- [ ] Done
+- [x] Done
 
 Endpoints built:
 
@@ -162,7 +213,7 @@ Outcome: Full working REST API, testable in `/docs`.
 
 **Goal:** The most interview-relevant module — complex SQL through SQLAlchemy.
 
-- [ ] Done
+- [x] Done
 
 Endpoints built:
 
