@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import check_db_connection
-from app.routers import transactions, accounts, categories, budgets, analytics
+from app.routers import transactions, accounts, categories, budgets, analytics, auth
 
 app = FastAPI(
     title="FinTrack API",
@@ -19,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(transactions.router)
 app.include_router(accounts.router)
 app.include_router(categories.router)

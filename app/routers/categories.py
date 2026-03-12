@@ -9,10 +9,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import get_current_user
 from app.models.category import Category
 from app.schemas.category import CategoryCreate, CategoryOut, CategoryUpdate
 
-router = APIRouter(prefix="/categories", tags=["Categories"])
+router = APIRouter(prefix="/categories", tags=["Categories"], dependencies=[Depends(get_current_user)])
 
 @router.get("/", response_model=list[CategoryOut])
 def get_categories(db: Session = Depends(get_db)):

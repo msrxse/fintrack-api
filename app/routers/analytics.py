@@ -3,6 +3,7 @@ from sqlalchemy import case, func, text
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import get_current_user
 from app.models.budget import Budget
 from app.models.category import Category
 from app.models.transaction import Transaction, TransactionType
@@ -15,7 +16,7 @@ from app.schemas.analytics import (
   AnalyticsTrends,
 )
 
-router = APIRouter(prefix="/analytics", tags=["Analytics"])
+router = APIRouter(prefix="/analytics", tags=["Analytics"], dependencies=[Depends(get_current_user)])
 
 @router.get("/spending-by-category", response_model=list[AnalyticsSpendingByCategory])
 def get_spending_by_category(type:TransactionType, db: Session = Depends(get_db)):

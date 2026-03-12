@@ -32,3 +32,13 @@ Health check at http://localhost:8000/health
 ```bash
 docker-compose down
 ```
+
+## Database Access
+
+```bash
+# Connect to the database
+docker exec -it fintrack_db psql -U fintrack -d fintrack_dev
+
+# Query users
+docker exec fintrack_db psql -U fintrack -d fintrack_dev -c "SELECT id, email, full_name, is_active, created_at FROM users;"
+```

@@ -9,20 +9,22 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import get_current_user
 from app.models.account import Account
+from app.models.user import User
 from app.schemas.account import AccountCreate, AccountOut, AccountUpdate
 
-router = APIRouter(prefix="/accounts", tags=["Accounts"])
+router = APIRouter(prefix="/accounts", tags=["Accounts"], dependencies=[Depends(get_current_user)])
 
 @router.get("/", response_model=list[AccountOut])
-def get_accounts(user_id:int, db: Session = Depends(get_db)):
-  return db.query(Account).filter(Account.user_id == user_id).all()
+def get_accounts(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+  return db.query(Account).filter(Account.user_id == user.id).all()
 
 @router.get("/{id}", response_model=AccountOut)
-def get_account(id: int, user_id: int, db: Session = Depends(get_db)):
+def get_account(id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
   account = db.query(Account).filter(
     Account.id == id,
-    Account.user_id == user_id).first()
+    Account.user_id == user.id).first()
   if account is None:
     raise HTTPException(status_code=404, detail="Account not found")
   return account
