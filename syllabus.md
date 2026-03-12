@@ -241,7 +241,7 @@ Outcome: You can explain and write complex DB queries — a core backend intervi
 
 **Goal:** Secure the API properly, understand JWT deeply.
 
-- [ ] Done
+- [x] Done
 
 Topics:
 
