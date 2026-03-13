@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import bcrypt
 import jwt
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -14,7 +14,11 @@ from app.schemas.user import UserCreate, UserOut
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", response_model=UserOut)
-def auth_user_register(body:UserCreate, db: Session = Depends(get_db)):
+def auth_user_register(
+    body:UserCreate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+  ):
   existing_user = db.query(User.email).filter(User.email == body.email).first()
   if existing_user:
     raise HTTPException(status_code=409, detail="This user already has an account. Login instead.")
@@ -27,6 +31,7 @@ def auth_user_register(body:UserCreate, db: Session = Depends(get_db)):
   db.add(db_user)
   db.commit()
   db.refresh(db_user)
+  background_tasks.add_task(send_welcome_email, str(db_user.email))
 
   return db_user
 
@@ -46,3 +51,6 @@ def auth_user_login(body:UserCreate, db:Session = Depends(get_db)):
 @router.get("/users/me", response_model=UserOut)
 def get_auth_user_me(user:User =  Depends(get_current_user)):
   return user
+
+def send_welcome_email(email: str):
+  print(f"Sending welcome email to {email}")

@@ -231,6 +231,7 @@ Topics:
 - Date truncation in PostgreSQL (`date_trunc`)
 - Window functions (running totals)
 - Query optimization — when to add indexes
+- **PRD TODO:** Fix N+1 query on `GET /transactions` — SQLAlchemy lazy-loads the `Category` relationship per row, firing one SELECT per transaction. Fix with `joinedload` or a JOIN query to fetch categories in bulk.
 - Returning shaped analytics responses
 
 Outcome: You can explain and write complex DB queries — a core backend interview skill.
@@ -262,8 +263,9 @@ Outcome: All routes protected. Users only see their own data.
 
 **Goal:** Make the API production-quality, not just functional.
 
-- [ ] Done
-      Topics:
+- [x] Done
+
+Topics:
 
 - FastAPI dependency injection pattern deeply — reusable, testable
 - Global exception handlers (`@app.exception_handler`)
