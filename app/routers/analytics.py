@@ -7,6 +7,7 @@ from app.dependencies import get_current_user
 from app.models.budget import Budget
 from app.models.category import Category
 from app.models.transaction import Transaction, TransactionType
+from app.models.user import User
 from app.schemas.analytics import (
   AnalyticsBudgetStatus,
   AnalyticsCashFlow,
@@ -95,7 +96,7 @@ def get_budget_status(db:Session = Depends(get_db)):
 
 
 @router.get("/cash-flow", response_model=list[AnalyticsCashFlow])
-def get_cash_flow(db:Session = Depends(get_db)):
+def get_cash_flow(user:User =  Depends(get_current_user), db:Session = Depends(get_db)):
   results = db.execute(text("""
     SELECT
         date,
@@ -103,9 +104,10 @@ def get_cash_flow(db:Session = Depends(get_db)):
         SUM(SUM(amount)) OVER (ORDER BY date) as running_balance
     FROM transactions
     WHERE is_deleted = false
+    AND account_id IN (SELECT id FROM accounts WHERE user_id = :user_id)
     GROUP BY date
     ORDER BY date
-  """)).all()
+  """), {"user_id": user.id}).all()
 
   return [{
     "date": row.date,
@@ -115,7 +117,7 @@ def get_cash_flow(db:Session = Depends(get_db)):
 
 
 @router.get("/trends", response_model=list[AnalyticsTrends])
-def get_trends(db:Session = Depends(get_db)):
+def get_trends(user:User =  Depends(get_current_user), db:Session = Depends(get_db)):
   results = db.execute(text("""
     SELECT
     category_id,
@@ -124,9 +126,10 @@ def get_trends(db:Session = Depends(get_db)):
     LAG(SUM(amount)) OVER (PARTITION BY category_id ORDER BY date_trunc('month', date)) as prev_month
     FROM transactions
     WHERE type = 'expense' AND is_deleted = false
+    AND account_id IN (SELECT id FROM accounts WHERE user_id = :user_id)
     GROUP BY category_id, date_trunc('month', date)
     ORDER BY category_id, month
-  """)).all()
+  """), {"user_id": user.id}).all()
 
   return [{
     "category_id": row.category_id,

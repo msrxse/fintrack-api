@@ -284,7 +284,8 @@ Outcome: API behaves predictably under errors, ready for a frontend to consume.
 **Goal:** Write tests like a professional, not an afterthought.
 
 - [ ] Done
-      Topics:
+
+Topics:
 
 - `pytest` setup and project structure for tests
 - Test database — separate DB, wipe between tests
