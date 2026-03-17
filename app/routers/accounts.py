@@ -30,18 +30,18 @@ def get_account(id: int, user: User = Depends(get_current_user), db: Session = D
   return account
 
 @router.post("/", response_model=AccountOut)
-def post_account(body:AccountCreate, db:Session = Depends(get_db)):
-  db_account = Account(**body.model_dump())
+def post_account(body: AccountCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+  db_account = Account(**body.model_dump(), user_id=user.id)
   db.add(db_account)
   db.commit()
-  # reloads the object from the DB so id and created_at are populated
   db.refresh(db_account)
   return db_account
 
 @router.put("/{id}", response_model=AccountOut)
-def put_account(id: int, body: AccountUpdate, db: Session = Depends(get_db)):
+def put_account(id: int, body: AccountUpdate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
   db_account = db.query(Account).filter(
     Account.id == id,
+    Account.user_id == user.id,
     Account.is_active == True).first()
   if db_account is None:
     raise HTTPException(status_code=404, detail="Account not found")
@@ -56,9 +56,10 @@ def put_account(id: int, body: AccountUpdate, db: Session = Depends(get_db)):
   return db_account
 
 @router.delete("/{id}", response_model=AccountOut)
-def delete_account(id: int, db: Session = Depends(get_db)):
+def delete_account(id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
   db_account = db.query(Account).filter(
     Account.id == id,
+    Account.user_id == user.id,
     Account.is_active == True
   ).first()
   if db_account is None:
