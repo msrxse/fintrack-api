@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.category import Category
+from app.models.user import User
 from app.schemas.category import CategoryCreate, CategoryOut, CategoryUpdate
 
 router = APIRouter(prefix="/categories", tags=["Categories"], dependencies=[Depends(get_current_user)])
@@ -28,8 +29,12 @@ def get_category(id: int, db: Session = Depends(get_db)):
   return category
 
 @router.post("/", response_model=CategoryOut)
-def post_category(body:CategoryCreate, db:Session = Depends(get_db)):
-  db_category = Category(**body.model_dump())
+def post_category(
+    body:CategoryCreate,
+    db:Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+  ):
+  db_category = Category(**body.model_dump(), user_id=current_user.id)
   db.add(db_category)
   db.commit()
   # reloads the object from the DB so id and created_at are populated

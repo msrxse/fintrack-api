@@ -283,7 +283,7 @@ Outcome: API behaves predictably under errors, ready for a frontend to consume.
 
 **Goal:** Write tests like a professional, not an afterthought.
 
-- [ ] Done
+- [x] Done
 
 Topics:
 

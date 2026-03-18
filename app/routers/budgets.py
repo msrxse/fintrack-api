@@ -6,6 +6,7 @@
 # DELETE /budgets/{id}   → soft delete
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -32,8 +33,11 @@ def get_budget(id: int, user: User = Depends(get_current_user), db: Session = De
 @router.post("/", response_model=BudgetOut)
 def post_budget(body:BudgetCreate, user: User = Depends(get_current_user), db:Session = Depends(get_db)):
   db_budget = Budget(**body.model_dump(), user_id=user.id)
-  db.add(db_budget)
-  db.commit()
+  try:
+    db.add(db_budget)
+    db.commit()
+  except IntegrityError:
+    raise HTTPException(status_code=409, detail="A budget just like this already exists.")
   # reloads the object from the DB so id and created_at are populated
   db.refresh(db_budget)
   return db_budget
@@ -62,6 +66,7 @@ def delete_budget(id: int, user: User = Depends(get_current_user), db: Session =
   ).first()
   if db_budget is None:
     raise HTTPException(status_code=404, detail="Budget not found")
+  db_budget.category  # eagerly load before delete
   db.delete(db_budget)
   db.commit()
   return db_budget
