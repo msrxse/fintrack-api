@@ -1,5 +1,6 @@
 import logging
 import time
+from contextlib import asynccontextmanager
 from typing import Awaitable, Callable
 
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -8,15 +9,27 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.database import check_db_connection
+from app.database import check_db_connection, engine
 from app.routers import accounts, analytics, auth, budgets, categories, transactions
 
 logging.basicConfig(level=logging.INFO)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if not check_db_connection():
+        raise RuntimeError("Cannot connect to database on startup")
+    logging.info("Database connection verified")
+    yield
+    engine.dispose()
+    logging.info("Database connections closed")
+
 
 app = FastAPI(
     title="FinTrack API",
     description="Personal finance tracker",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -66,12 +79,15 @@ async def add_logger(request: Request, call_next: Callable[[Request], Awaitable[
 @app.get("/health", tags=["System"])
 def health_check():
     db_ok = check_db_connection()
-    return {
-        "status": "ok" if db_ok else "degraded",
-        "api": True,
-        "database": db_ok,
-        "environment": settings.environment,
-    }
+    return JSONResponse(
+        status_code=200 if db_ok else 503,
+        content={
+            "status": "ok" if db_ok else "degraded",
+            "api": True,
+            "database": db_ok,
+            "environment": settings.environment,
+        }
+    )
 
 
 @app.get("/", tags=["System"])

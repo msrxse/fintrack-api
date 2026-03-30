@@ -17,5 +17,19 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    build: .
+    container_name: fintrack_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   postgres_data:

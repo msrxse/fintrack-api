@@ -304,7 +304,7 @@ Outcome: Test suite that gives you confidence to refactor. Looks great in a port
 
 **Goal:** Understand what makes code "production-ready."
 
-- [ ] Done
+- [x] Done
 
 Topics:
 
